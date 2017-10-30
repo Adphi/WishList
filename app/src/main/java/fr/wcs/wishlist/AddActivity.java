@@ -40,6 +40,7 @@ public class AddActivity extends AppCompatActivity {
 
     private User mUser;
     private Uri mUri = null;
+    private Bitmap mBitmap = null;
 
     @Override
     protected void onCreate (final Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class AddActivity extends AppCompatActivity {
                 takeImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //dispatchTakePictureIntent();
+                        dispatchTakePictureIntent();
                         alert.cancel();
                     }
                 });
@@ -132,21 +133,8 @@ public class AddActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            mImageWish.setImageBitmap(thumbnail);
 
-
-            /*mProgressDialog.setMessage("Uploading");
-            mProgressDialog.show();
-
-            StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
-
-            photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
-                    alert.dismiss();
-                    mProgressDialog.dismiss();
-                }
-            });*/
         }
 
     }

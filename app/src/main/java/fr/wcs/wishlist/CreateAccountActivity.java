@@ -82,7 +82,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                             editor.apply();
                             Toast.makeText(CreateAccountActivity.this, "WishList te souhaite la bienvenue", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
-                            intent.putExtra("UserName", userName);
+                            intent.putExtra("UserName", userNameContent);
                             startActivity(intent);
                         }
                         // Encryptage du mot de passe
