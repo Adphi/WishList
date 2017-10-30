@@ -3,9 +3,9 @@ package fr.wcs.wishlist;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -88,23 +88,24 @@ public class AddActivity extends AppCompatActivity {
             });
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-                Uri uri = data.getData();
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
 
-                mProgressDialog.setMessage("Uploading");
-                mProgressDialog.show();
 
-                StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
+            /*mProgressDialog.setMessage("Uploading");
+            mProgressDialog.show();
 
-                photopath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
-                        alert.dismiss();
-                        mProgressDialog.dismiss();
-                    }
-                });
-            }
+            StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
+
+            photopath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
+                    alert.dismiss();
+                    mProgressDialog.dismiss();
+                }
+            });*/
         }
+    }
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

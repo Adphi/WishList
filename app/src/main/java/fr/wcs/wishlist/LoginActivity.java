@@ -64,16 +64,16 @@ public class LoginActivity extends AppCompatActivity {
                     simpleProgressBar.setVisibility(view.GONE);
                 } else {
                     // Sinon on recupere tous les users
-                    final DatabaseReference refUser = FirebaseHelper.getInstance().getReference("User");
+                    final DatabaseReference refUser = FirebaseHelper.getInstance().getReference("UserAuth");
                     refUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot dsp : dataSnapshot.getChildren()) {
-                                User userValues = dsp.getValue(User.class);
+                                UserAuth userAuthValues = dsp.getValue(UserAuth.class);
                                 //On compare le contenu des edit text avec Firebase grâce au user_name
-                                if (userValues.getUser_name().equals(userNameContent)) {
+                                if (userAuthValues.getUser_name().equals(userNameContent)) {
                                     // On verifie le password
-                                    if (userValues.getUser_password().equals(mEncrypt(userPasswordContent, "AES"))) {
+                                    if (userAuthValues.getUser_password().equals(mEncrypt(userPasswordContent, "AES"))) {
                                         // La clé de l'utilisateur qu'on va utiliser partout dans l'application.
                                         mUserId = dsp.getKey();
                                         // On sauvegarde l'utilisateur connu dans les sharedPreferences
@@ -85,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
                                         refUser.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                intent.putExtra("UserName", userName);
                                                 startActivity(intent);
                                             }
 

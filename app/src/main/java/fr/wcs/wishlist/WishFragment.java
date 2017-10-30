@@ -10,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import fr.wcs.wishlist.Controller.ItemAdapter;
-import fr.wcs.wishlist.Models.Item;
+import fr.wcs.wishlist.Models.User;
 
 public class WishFragment extends Fragment{
     @Override
@@ -28,13 +26,12 @@ public class WishFragment extends Fragment{
                 startActivity(intent);
             }
         });
-        ArrayList<Item> items = new ArrayList<>();
-        items.add(new Item("object1", "desciption1", "gs://wishlist-f39ed.appspot.com/arcade_navale.png"));
-        items.add(new Item("object2", "description2", "gs://wishlist-f39ed.appspot.com/nikola_tesla_2037575.jpg"));
+
+        User user = ((MainActivity) getActivity()).getUser();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewWish);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(layoutManager);
-        ItemAdapter itemAdapter = new ItemAdapter(getActivity(), items);
+        ItemAdapter itemAdapter = new ItemAdapter(getActivity(), user.getWishItems());
         recyclerView.setAdapter(itemAdapter);
 
 

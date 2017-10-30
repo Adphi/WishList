@@ -1,12 +1,15 @@
 package fr.wcs.wishlist.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by adphi on 30/10/17.
  */
 
-public class User {
+public class User implements Parcelable{
     private String name;
     private ArrayList<Item> wishItems = new ArrayList<>();
     private ArrayList<Item> giftItems = new ArrayList<>();
@@ -47,4 +50,37 @@ public class User {
     public void setOfferedItems(ArrayList<Item> offeredItems) {
         this.offeredItems = offeredItems;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeSerializable(wishItems);
+        dest.writeSerializable(giftItems);
+        dest.writeSerializable(offeredItems);
+    }
+
+    protected User(Parcel in) {
+        name = in.readString();
+        wishItems = in.createTypedArrayList(Item.CREATOR);
+        giftItems = in.createTypedArrayList(Item.CREATOR);
+        offeredItems = in.createTypedArrayList(Item.CREATOR);
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
 }

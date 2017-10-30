@@ -1,24 +1,28 @@
 package fr.wcs.wishlist;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
 import android.widget.ImageView;
+
+import java.util.ArrayList;
+
+import fr.wcs.wishlist.Models.Item;
+import fr.wcs.wishlist.Models.User;
 
 public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        Intent intent = getIntent();
+        String userName = intent.getStringExtra("UserName");
+        mUser = new User(userName);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(new Item("object1", "description1", "gs://wishlist-f39ed.appspot.com/arcade_navale.png"));
+        items.add(new Item("object2", "description2", "gs://wishlist-f39ed.appspot.com/nikola_tesla_2037575.jpg"));
+        mUser.setWishItems(items);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -91,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    public User getUser() {
+        return mUser;
     }
 }
 

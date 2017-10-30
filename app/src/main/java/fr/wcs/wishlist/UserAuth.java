@@ -2,12 +2,12 @@ package fr.wcs.wishlist;
 /**
  * Created by apprenti on 30/10/17.
  */
-public class User {
+public class UserAuth {
     private String user_name;
     private String user_password;
-    public User() {
+    public UserAuth() {
     }
-    public User(String user_name, String user_password) {
+    public UserAuth(String user_name, String user_password) {
         this.user_name = user_name;
         this.user_password = user_password;
     }
