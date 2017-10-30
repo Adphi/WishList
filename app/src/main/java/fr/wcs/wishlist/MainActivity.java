@@ -12,10 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-
-import fr.wcs.wishlist.Models.Item;
+import fr.wcs.wishlist.Helpers.UserHelper;
 import fr.wcs.wishlist.Models.User;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,11 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String userName = intent.getStringExtra("UserName");
-        mUser = new User(userName);
-        ArrayList<Item> items = new ArrayList<>();
-        items.add(new Item("description1", "gs://wishlist-f39ed.appspot.com/arcade_navale.png",""));
-        items.add(new Item("description2", "gs://wishlist-f39ed.appspot.com/nikola_tesla_2037575.jpg",""));
-        mUser.setWishItems(items);
+        mUser = UserHelper.init(userName);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -102,10 +97,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
-    }
-
-    public User getUser() {
-        return mUser;
     }
 }
 

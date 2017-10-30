@@ -1,4 +1,4 @@
-package fr.wcs.wishlist.Controller;
+package fr.wcs.wishlist.Helpers;
 
 import com.google.firebase.database.FirebaseDatabase;
 

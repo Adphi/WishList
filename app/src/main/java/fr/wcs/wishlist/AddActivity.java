@@ -21,7 +21,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import fr.wcs.wishlist.Helpers.UserHelper;
 import fr.wcs.wishlist.Models.Item;
+import fr.wcs.wishlist.Models.User;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -36,11 +38,16 @@ public class AddActivity extends AppCompatActivity {
     private ImageButton mImageWish;
     private Button addButton;
 
+    private User mUser;
+    private Uri mUri = null;
+
     @Override
     protected void onCreate (final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         mProgressDialog = new ProgressDialog(this);
+
+        mUser = UserHelper.getInstance();
 
         mFirebaseStorage = FirebaseStorage.getInstance();
 
@@ -49,7 +56,7 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 View view = getLayoutInflater().inflate(R.layout.dialog_add, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
 
                 builder.setView(view);
                 alert = builder.create();
@@ -59,6 +66,7 @@ public class AddActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         //dispatchTakePictureIntent();
+                        alert.cancel();
                     }
                 });
                 ImageButton selectImage = view.findViewById(R.id.selectImage);
@@ -68,14 +76,46 @@ public class AddActivity extends AppCompatActivity {
                         Intent intent = new Intent(Intent.ACTION_PICK);
                         intent.setType("image/*");
                         startActivityForResult(intent, GALLERY_INTENT);
-
+                        alert.cancel();
                     }
                 });
             }
         });
         addButton = findViewById(R.id.addButton);
-        addButton.setEnabled(false);
 
+
+
+        final EditText descriptionText = findViewById(R.id.descriptionEditText);
+        final EditText linkText = findViewById(R.id.linkEditText);
+        if (!(descriptionText.equals(""))){
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mProgressDialog.setMessage("Uploading");
+                    mProgressDialog.show();
+                    final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
+                    photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
+                            mProgressDialog.cancel();
+                            Glide.with(AddActivity.this)
+                                    .using(new FirebaseImageLoader())
+                                    .load(photopath)
+                                    .into(mImageWish);
+
+                            Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString());
+                            mUser.getWishItems().add(item);
+                            UserHelper.update();
+                            AddActivity.super.onBackPressed();
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -85,38 +125,10 @@ public class AddActivity extends AppCompatActivity {
         mImageWish = findViewById(R.id.imageWish);
 
         if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
+            mUri = data.getData();
+            mImageWish.setImageURI(mUri);
 
-            mProgressDialog.setMessage("Uploading");
-            mProgressDialog.show();
 
-            final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
-
-            photopath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
-                    Glide.with(AddActivity.this)
-                            .using(new FirebaseImageLoader())
-                            .load(photopath)
-                            .into(mImageWish);
-
-                    final EditText descriptionText = findViewById(R.id.descriptionEditText);
-                    final EditText linkText = findViewById(R.id.linkEditText);
-                    if (!(descriptionText.equals("") && photopath.toString().equals(""))){
-                        addButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString());
-                                AddActivity.super.onBackPressed();
-                            }
-                        });
-                    }
-                    else {
-                        Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
@@ -125,9 +137,9 @@ public class AddActivity extends AppCompatActivity {
             /*mProgressDialog.setMessage("Uploading");
             mProgressDialog.show();
 
-            StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
+            StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
 
-            photopath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();

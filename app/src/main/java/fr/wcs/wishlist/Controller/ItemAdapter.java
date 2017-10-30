@@ -35,6 +35,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         mFirebaseStorage = FirebaseStorage.getInstance();
     }
 
+    public void setItems(ArrayList<Item> items) {
+        mItems = items;
+        notifyDataSetChanged();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());

@@ -22,14 +22,12 @@ import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import fr.wcs.wishlist.Controller.FirebaseHelper;
+import fr.wcs.wishlist.Helpers.FirebaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
     final String userName = "NameKey";
     final String userPassword = "PasswordKey";
-    private boolean auth = false;
     private String mUserId = "UserKey";
-    private String mEncrypt = "encrypt";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +40,11 @@ public class LoginActivity extends AppCompatActivity {
         final SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final String sharedPrefUserName = sharedpreferences.getString(userName, "");
         final String sharedPrefUserPassword = sharedpreferences.getString(userPassword, "");
-        final String sharedPrefUserKey = sharedpreferences.getString(mUserId, "");
+        if(!sharedPrefUserName.isEmpty() && !sharedPrefUserPassword.isEmpty()){
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("UserName", userName);
+            startActivity(intent);
+        }
         final ProgressBar simpleProgressBar = findViewById(R.id.simpleProgressBar);
         //On rempli les editText avec les sharedPreferences si c'est pas notre premiere connexion
         if (!sharedPrefUserName.isEmpty() && !sharedPrefUserPassword.isEmpty()) {
@@ -73,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                                 //On compare le contenu des edit text avec Firebase grâce au user_name
                                 if (userAuthValues.getUser_name().equals(userNameContent)) {
                                     // On verifie le password
-                                    if (userAuthValues.getUser_password().equals(mEncrypt(userPasswordContent, "AES"))) {
+                                    if (userAuthValues.getUser_password().equals(encrypt(userPasswordContent, "AES"))) {
                                         // La clé de l'utilisateur qu'on va utiliser partout dans l'application.
                                         mUserId = dsp.getKey();
                                         // On sauvegarde l'utilisateur connu dans les sharedPreferences
@@ -108,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         // Encryptage du mot de passe
-                        public String mEncrypt(String userPassword, String key) {
+                        public String encrypt(String userPassword, String key) {
                             try {
                                 Key clef = new SecretKeySpec(key.getBytes("ISO-8859-2"), "Blowfish");
                                 Cipher cipher = Cipher.getInstance("Blowfish");

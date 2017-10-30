@@ -22,7 +22,7 @@ import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import fr.wcs.wishlist.Controller.FirebaseHelper;
+import fr.wcs.wishlist.Helpers.FirebaseHelper;
 
 public class CreateAccountActivity extends AppCompatActivity {
     final String userName = "NameKey";
