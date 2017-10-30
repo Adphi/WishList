@@ -19,6 +19,7 @@ import com.google.firebase.storage.UploadTask;
 
 public class AddActivity extends AppCompatActivity {
 
+    private ImageButton imageWish;
     private static final int GALLERY_INTENT = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -35,7 +36,7 @@ public class AddActivity extends AppCompatActivity {
 
         mFirebaseStorage = FirebaseStorage.getInstance();
 
-        ImageButton imageWish =  findViewById(R.id.imageWish);
+        imageWish =  findViewById(R.id.imageWish);
         imageWish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,17 +72,24 @@ public class AddActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK){
-            Uri uri = data.getData();
+            final Uri uri = data.getData();
 
             mProgressDialog.setMessage("Uploading");
             mProgressDialog.show();
 
-            StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
+            final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(uri.getLastPathSegment());
 
             photopath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
+                    photopath.child("Photos/" + uri.getLastPathSegment()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            imageWish.setImageURI(uri);
+                        }
+                    });
+
                     alert.dismiss();
                     mProgressDialog.dismiss();
                 }
