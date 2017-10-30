@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 public class GiftFragment extends Fragment{
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootview = inflater.inflate(R.layout.tab3, container, false);
+        View rootview = inflater.inflate(R.layout.gift, container, false);
         return rootview;
     }
 }

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 public class OfferedFragment extends Fragment{
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootview = inflater.inflate(R.layout.tab2, container, false);
+        View rootview = inflater.inflate(R.layout.offered, container, false);
         return rootview;
     }
 }

@@ -18,7 +18,7 @@ import fr.wcs.wishlist.Models.Item;
 public class WishFragment extends Fragment{
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootview = inflater.inflate(R.layout.tab1, container, false);
+        View rootview = inflater.inflate(R.layout.wish, container, false);
 
         FloatingActionButton fab = rootview.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
