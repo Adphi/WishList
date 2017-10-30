@@ -8,25 +8,18 @@ import android.os.Parcelable;
  */
 
 public class Item implements Parcelable{
-    private String name;
+
     private String description;
     private String imageUrl;
+    private String itemUrl;
 
-    public Item(String name, String description, String imageUrl) {
-        this.name = name;
+    public Item(String description, String imageUrl, String itemUrl) {
         this.description = description;
         this.imageUrl = imageUrl;
+        this.itemUrl = itemUrl;
     }
 
     public Item() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -52,13 +45,11 @@ public class Item implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
         dest.writeString(description);
         dest.writeString(imageUrl);
     }
 
     protected Item(Parcel in) {
-        name = in.readString();
         description = in.readString();
         imageUrl = in.readString();
     }
@@ -74,4 +65,5 @@ public class Item implements Parcelable{
             return new Item[size];
         }
     };
+
 }

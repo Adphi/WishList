@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
@@ -45,7 +44,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.mTextViewItemName.setText(mItems.get(position).getName());
         String itemImageUrl = mItems.get(position).getImageUrl();
         StorageReference reference = mFirebaseStorage.getReferenceFromUrl(itemImageUrl);
         Glide.with(mContext)
@@ -72,13 +70,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mImageViewItemPhoto;
-        TextView mTextViewItemName;
         FloatingActionButton mButtonDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mImageViewItemPhoto = itemView.findViewById(R.id.imageViewItemImage);
-            mTextViewItemName = itemView.findViewById(R.id.textViewItemName);
             mButtonDelete = itemView.findViewById(R.id.floatingActionButtonDelete);
         }
 

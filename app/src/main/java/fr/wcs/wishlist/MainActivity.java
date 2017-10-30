@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(R.layout.abs_layout);
 
-        ImageView shareButton = findViewById(R.id.backButton);
+        ImageView shareButton = findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         String userName = intent.getStringExtra("UserName");
         mUser = new User(userName);
         ArrayList<Item> items = new ArrayList<>();
-        items.add(new Item("object1", "description1", "gs://wishlist-f39ed.appspot.com/arcade_navale.png"));
-        items.add(new Item("object2", "description2", "gs://wishlist-f39ed.appspot.com/nikola_tesla_2037575.jpg"));
+        items.add(new Item("description1", "gs://wishlist-f39ed.appspot.com/arcade_navale.png",""));
+        items.add(new Item("description2", "gs://wishlist-f39ed.appspot.com/nikola_tesla_2037575.jpg",""));
         mUser.setWishItems(items);
     }
 
