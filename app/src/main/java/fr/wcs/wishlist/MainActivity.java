@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.ImageView;
@@ -62,14 +61,14 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    Tab1 tab1 = new Tab1();
-                    return tab1;
+                    WishFragment wishFragment = new WishFragment();
+                    return wishFragment;
                 case 1:
-                    Tab2 tab2 = new Tab2();
-                    return tab2;
+                    OfferedFragment offeredFragment = new OfferedFragment();
+                    return offeredFragment;
                 case 2:
-                    Tab3 tab3 = new Tab3();
-                    return tab3;
+                    GiftFragment giftFragment = new GiftFragment();
+                    return giftFragment;
                 default:
                     return null;
             }

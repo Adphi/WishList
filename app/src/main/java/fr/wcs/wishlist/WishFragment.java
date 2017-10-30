@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import fr.wcs.wishlist.Controller.ItemAdapter;
 import fr.wcs.wishlist.Models.Item;
 
-public class Tab1 extends Fragment{
+public class WishFragment extends Fragment{
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.tab1, container, false);
