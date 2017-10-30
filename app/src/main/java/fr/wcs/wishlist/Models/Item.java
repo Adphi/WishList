@@ -5,25 +5,17 @@ package fr.wcs.wishlist.Models;
  */
 
 public class Item {
-    private String name;
     private String description;
     private String imageUrl;
+    private String itemUrl;
 
-    public Item(String name, String description, String imageUrl) {
-        this.name = name;
+    public Item(String description, String imageUrl, String itemUrl) {
         this.description = description;
         this.imageUrl = imageUrl;
+        this.itemUrl = itemUrl;
     }
 
     public Item() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -40,5 +32,13 @@ public class Item {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getItemUrl() {
+        return itemUrl;
+    }
+
+    public void setItemUrl(String itemUrl) {
+        this.itemUrl = itemUrl;
     }
 }

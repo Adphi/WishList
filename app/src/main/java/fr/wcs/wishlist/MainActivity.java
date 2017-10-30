@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(R.layout.abs_layout);
 
-        ImageView shareButton = findViewById(R.id.backButton);
+        ImageView shareButton = findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

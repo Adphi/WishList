@@ -45,7 +45,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.mTextViewItemName.setText(mItems.get(position).getName());
         String itemImageUrl = mItems.get(position).getImageUrl();
         StorageReference reference = mFirebaseStorage.getReferenceFromUrl(itemImageUrl);
         Glide.with(mContext)

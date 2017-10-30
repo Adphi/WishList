@@ -19,28 +19,14 @@
             android:id="@+id/imageViewItemImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="4dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:scaleType="fitCenter"
-            app:layout_constraintBottom_toTopOf="@+id/textViewItemName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_menu_report_image"/>
-
-        <TextView
-            android:id="@+id/textViewItemName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:srcCompat="@android:drawable/ic_menu_report_image" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingActionButtonGive"
