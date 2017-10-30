@@ -1,48 +1,19 @@
 package fr.wcs.wishlist;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.Typeface;
-import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Bundle;
+
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -53,11 +24,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -117,14 +83,14 @@ public class AddActivity extends AppCompatActivity {
                 AlertDialog alert = builder.create();
                 alert.show();
                 ImageButton takeImage = view.findViewById(R.id.takeImage);
-                takeImage.setOnClickListener(new OnClickListener() {
+                takeImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dispatchTakePictureIntent();
                     }
                 });
                 ImageButton selectImage = view.findViewById(R.id.selectImage);
-                selectImage.setOnClickListener(new OnClickListener() {
+                selectImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -230,17 +196,19 @@ public class AddActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
             byte[] data = baos.toByteArray();
 
-            StorageReference photoRef = mStorageReference.child("image/" + mViaName.replace(" ", "_") + "/" + path.getLastPathSegment());
+            final StorageReference photoRef = mStorageReference.child("image/" + mViaName.replace(" ", "_") + "/" + path.getLastPathSegment());
             photoRef.putFile(path)
                     //viaRef.putBytes(data)
 
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            ImageButton takeImage = findViewById(R.id.takeImage);
+                            ImageButton selectImage = findViewById(R.id.selectImage);
                             mProgressBar.setVisibility(View.GONE);
                             mUploadInfo.setVisibility(View.GONE);
-                            mTakeImage.setVisibility(View.GONE);
-                            mSelectImage.setVisibility(View.GONE);
+                            takeImage.setVisibility(View.GONE);
+                            selectImage.setVisibility(View.GONE);
                             mInfoDialog.setVisibility(View.GONE);
 
                             Toast.makeText(AddActivity.this, "Image envoyée ", Toast.LENGTH_LONG).show();
@@ -262,6 +230,9 @@ public class AddActivity extends AppCompatActivity {
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
+                            ImageButton takeImage = findViewById(R.id.takeImage);
+                            ImageButton selectImage = findViewById(R.id.selectImage);
+
                             float progress = 100f * ((float)taskSnapshot.getBytesTransferred() / (float)taskSnapshot.getTotalByteCount());
                             System.out.println("Upload is " + progress + "% done");
                             int currentProgress = (int) progress;
@@ -269,8 +240,8 @@ public class AddActivity extends AppCompatActivity {
                             mProgressBar.setVisibility(View.VISIBLE);
                             mUploadInfo.setText("Envoi en cours :" +" " + String.valueOf(currentProgress) +"%");
                             mUploadInfo.setVisibility(View.VISIBLE);
-                            mTakeImage.setVisibility(View.GONE);
-                            mSelectImage.setVisibility(View.GONE);
+                            takeImage.setVisibility(View.GONE);
+                            selectImage.setVisibility(View.GONE);
                             mInfoDialog.setVisibility(View.GONE);
                             mImageView.setVisibility(View.GONE);
 
