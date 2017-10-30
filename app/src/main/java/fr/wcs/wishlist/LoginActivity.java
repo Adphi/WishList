@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         final String sharedPrefUserPassword = sharedpreferences.getString(userPassword, "");
         if(!sharedPrefUserName.isEmpty() && !sharedPrefUserPassword.isEmpty()){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("UserName", userName);
+            intent.putExtra("UserName", sharedPrefUserName);
             startActivity(intent);
         }
         final ProgressBar simpleProgressBar = findViewById(R.id.simpleProgressBar);

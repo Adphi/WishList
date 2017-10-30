@@ -73,14 +73,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                             UserAuth userAuth = new UserAuth(userNameContent, userPasswordContent);
                             userAuth.setUser_name(userNameContent);
                             userAuth.setUser_password(mEncrypt(userPasswordContent, "AES"));
-                            int userUid = userName.hashCode();
-                            refUser.child(String.valueOf(userUid)).setValue(userAuth);
-                            // On enregistre dans les shared Preferences
                             SharedPreferences.Editor editor = sharedpreferences.edit();
                             editor.putString(userName, userNameContent);
                             editor.putString(userPassword, userPasswordContent);
                             editor.apply();
-                            Toast.makeText(CreateAccountActivity.this, "WishList te souhaite la bienvenue", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateAccountActivity.this, "WishList te souhaite la bienvenue " + userNameContent, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
                             intent.putExtra("UserName", userNameContent);
                             startActivity(intent);

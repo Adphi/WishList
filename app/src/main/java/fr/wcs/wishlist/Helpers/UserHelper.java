@@ -24,16 +24,32 @@ public class UserHelper {
     private UserHelper(){}
 
     public static User init(String name) {
+        Log.d(TAG, "init() called with: name = [" + name + " " + String.valueOf(name.hashCode()) + "]");
         mUser = new User(name);
         mFirebaseDatabase = FirebaseHelper.getInstance();
-        int uid = mUser.getName().hashCode();
-        mRef = mFirebaseDatabase.getReference(String.valueOf(uid));
+        mRef = mFirebaseDatabase.getReference("Users");
         mRef.keepSynced(true);
+
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChild(String.valueOf(mUser.getName().hashCode()))){
+                    mRef.child(String.valueOf(mUser.getName().hashCode())).setValue(mUser);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mUser = dataSnapshot.getValue(User.class);
-                if(mListener != null) {
+                DataSnapshot userSnapShot = dataSnapshot.child(String.valueOf(mUser.getName().hashCode()));
+                mUser = userSnapShot.getValue(User.class);
+                if(mListener != null && mUser != null) {
                     mListener.onUserDataReader(mUser);
                     Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
                 }
@@ -52,7 +68,7 @@ public class UserHelper {
     }
 
     public static void update(){
-        mRef.setValue(mUser);
+        mRef.child(String.valueOf(mUser.getName().hashCode())).setValue(mUser);
     }
 
     public interface UserDataReadyListener {
