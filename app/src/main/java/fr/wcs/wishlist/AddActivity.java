@@ -112,7 +112,7 @@ public class AddActivity extends AppCompatActivity {
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
                                 mProgressDialog.cancel();
-                                Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString(), mUser);
+                                Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString(), mUser.getName());
                                 mUser.getWishItems().add(item);
                                 UserHelper.update();
                                 AddActivity.super.onBackPressed();
@@ -136,7 +136,7 @@ public class AddActivity extends AppCompatActivity {
                                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                                 Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
                                 mProgressDialog.cancel();
-                                Item item = new Item(descriptionText.getText().toString(), downloadUrl.toString(), linkText.getText().toString(), mUser);
+                                Item item = new Item(descriptionText.getText().toString(), downloadUrl.toString(), linkText.getText().toString(), mUser.getName());
                                 mUser.getWishItems().add(item);
                                 UserHelper.update();
                                 AddActivity.super.onBackPressed();

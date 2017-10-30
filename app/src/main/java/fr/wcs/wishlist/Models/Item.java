@@ -9,13 +9,13 @@ public class Item{
     private String description;
     private String imageUrl;
     private String itemUrl;
-    private User user;
+    private String userName;
 
-    public Item(String description, String imageUrl, String itemUrl, User user) {
+    public Item(String description, String imageUrl, String itemUrl, String userName) {
         this.description = description;
         this.imageUrl = imageUrl;
         this.itemUrl = itemUrl;
-        this.user = user;
+        this.userName = userName;
     }
 
     public Item() {
@@ -37,11 +37,28 @@ public class Item{
         this.imageUrl = imageUrl;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getItemUrl() {
+        return itemUrl;
+    }
+
+    public void setItemUrl(String itemUrl) {
+        this.itemUrl = itemUrl;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Item other = (Item)obj;
+        return this.userName.equals(other.userName)
+                && this.description.equals(other.description)
+                && this.imageUrl.equals(other.imageUrl)
+                && this.itemUrl.equals(other.itemUrl);
     }
 }

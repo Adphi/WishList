@@ -45,8 +45,8 @@ public class WishFragment extends Fragment{
 
         UserHelper.setOnUserDataReaderListener(new UserHelper.UserDataReadyListener() {
             @Override
-            public void onUserDataReader(User user) {
-                Log.d(TAG, "onUserDataReader() called with: user = [" + user + "]");
+            public void onUserDataReady(User user) {
+                Log.d(TAG, "onUserDataReady() called with: user = [" + user + "]");
                 mUser = user;
                 mItemAdapter.setItems(mUser.getWishItems());
             }

@@ -77,6 +77,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                             editor.putString(userName, userNameContent);
                             editor.putString(userPassword, userPasswordContent);
                             editor.apply();
+                            String userUid = String.valueOf(userNameContent.hashCode());
+                            refUser.child(userUid).setValue(userAuth);
                             Toast.makeText(CreateAccountActivity.this, "WishList te souhaite la bienvenue " + userNameContent, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
                             intent.putExtra("UserName", userNameContent);

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import fr.wcs.wishlist.Models.Item;
 import fr.wcs.wishlist.R;
 
+import static android.view.View.GONE;
+
 /**
  * Created by adphi on 30/10/17.
  */
@@ -31,7 +33,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private Context mContext;
     private ArrayList<Item> mItems;
     private FirebaseStorage mFirebaseStorage;
-    private ItemDeletedListener listener = null;
+    private ItemDeletedListener deleteListener = null;
+    private ItemGiftListener giftListener = null;
+    private ItemGiftRemovedListener gitRemoveListener = null;
     private State mState = null;
 
     public ItemAdapter(Context context, ArrayList<Item> items, State state) {
@@ -65,8 +69,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         holder.mButtonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener != null) {
-                    listener.onItemDeleted(position);
+                if(deleteListener != null) {
+                    deleteListener.onItemDeleted(position);
+                }
+            }
+        });
+        holder.mButtonGift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(giftListener != null) {
+                    giftListener.onItemGift(position);
                 }
             }
         });
@@ -92,13 +104,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             switch (mState) {
                 case WISH:
                     mButtonDelete.setVisibility(View.VISIBLE);
-                    mButtonGift.setVisibility(View.GONE);
+                    mButtonGift.setVisibility(GONE);
                     break;
                 case GIFT:
-                    mButtonDelete.setVisibility(View.GONE);
+                    mButtonDelete.setVisibility(GONE);
+                    mButtonGift.setVisibility(View.VISIBLE);
                     break;
                 case OFFER:
-                    mButtonDelete.setVisibility(View.GONE);
+                    mButtonDelete.setVisibility(GONE);
+                    mButtonGift.setVisibility(GONE);
                     break;
             }
         }
@@ -106,10 +120,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     public void setOnItemDeletedListener(ItemDeletedListener listener) {
-        this.listener = listener;
+        this.deleteListener = listener;
+    }
+    public void setOnGiftListener(ItemGiftListener listener) {
+        this.giftListener = listener;
+    }
+    public void setOnGiftRemovedListener(ItemGiftRemovedListener listener) {
+        this.gitRemoveListener = listener;
     }
 
     public interface ItemDeletedListener {
         void onItemDeleted(int index);
+    }
+
+    public  interface ItemGiftListener {
+        void onItemGift(int index);
+    }
+
+    public interface ItemGiftRemovedListener {
+        void onGiftRemove(int index);
     }
 }

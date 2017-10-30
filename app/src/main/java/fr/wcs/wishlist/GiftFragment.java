@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,10 +46,15 @@ public class GiftFragment extends Fragment{
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mItems.clear();
+                Log.d("HELPER", "GiftList Changed");
                 for(DataSnapshot data : dataSnapshot.getChildren()) {
                     if(!userUid.equals(data.getKey())) {
                         User user = data.getValue(User.class);
-                        mItems.addAll(user.getWishItems());
+                        for(Item item : user.getWishItems()) {
+                            mItems.add(item);
+
+                        }
                     }
                 }
                 mItemAdapter.notifyDataSetChanged();
@@ -57,6 +63,32 @@ public class GiftFragment extends Fragment{
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        mItemAdapter.setOnGiftListener(new ItemAdapter.ItemGiftListener() {
+            @Override
+            public void onItemGift(int index) {
+                final Item item = mItems.get(index);
+                final String userName = item.getUserName();
+                mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("HELPER", "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
+                        String userUid = String.valueOf(userName.hashCode());
+                        DataSnapshot userData = dataSnapshot.child(userUid);
+                        User user = userData.getValue(User.class);
+                        Log.d("HELPER", "onDataChange: " + user.toString());
+                        user.getOfferedItems().add(item);
+                        user.getWishItems().remove(item);
+                        mRef.child(userUid).setValue(user);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
         return rootview;

@@ -47,11 +47,11 @@ public class UserHelper {
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 DataSnapshot userSnapShot = dataSnapshot.child(String.valueOf(mUser.getName().hashCode()));
                 mUser = userSnapShot.getValue(User.class);
                 if(mListener != null && mUser != null) {
-                    mListener.onUserDataReader(mUser);
-                    Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
+                    mListener.onUserDataReady(mUser);
                 }
             }
 
@@ -72,7 +72,7 @@ public class UserHelper {
     }
 
     public interface UserDataReadyListener {
-        void onUserDataReader(User user);
+        void onUserDataReady(User user);
     }
 
     public static void setOnUserDataReaderListener(UserDataReadyListener listener){
