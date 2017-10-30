@@ -59,51 +59,51 @@ public class LoginActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                     simpleProgressBar.setVisibility(view.GONE);
                 } else {
-                // Sinon on recupere tous les users
-                final DatabaseReference refUser = FirebaseDatabase.getInstance().getReference("User");
-                refUser.addListenerForSingleValueEvent(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(DataSnapshot dataSnapshot) {
-                   for (DataSnapshot dsp : dataSnapshot.getChildren()) {
-                       User userValues = dsp.getValue(User.class);
-                       //On compare le contenu des edit text avec Firebase grâce au user_name
-                       if (userValues.getUser_name().equals(userNameContent)) {
-                           // On verifie le password
-                           if (userValues.getUser_password().equals(mEncrypt(userPasswordContent, "AES"))) {
-                               // La clé de l'utilisateur qu'on va utiliser partout dans l'application.
-                               mUserId = dsp.getKey();
-                               // On sauvegarde l'utilisateur connu dans les sharedPreferences
-                               SharedPreferences.Editor editor = sharedpreferences.edit();
-                               editor.putString(userName, userNameContent);
-                               editor.putString(userPassword, userPasswordContent);
-                               editor.apply();
-                               // If user is known : if he has no quest => LobbyActivity; if he has => PlayerActivity
-                               refUser.addListenerForSingleValueEvent(new ValueEventListener() {
-                                   @Override
-                                   public void onDataChange(DataSnapshot dataSnapshot) {
-                                       Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                       startActivity(intent);
-                                   }
+                    // Sinon on recupere tous les users
+                    final DatabaseReference refUser = FirebaseDatabase.getInstance().getReference("User");
+                    refUser.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                                User userValues = dsp.getValue(User.class);
+                                //On compare le contenu des edit text avec Firebase grâce au user_name
+                                if (userValues.getUser_name().equals(userNameContent)) {
+                                    // On verifie le password
+                                    if (userValues.getUser_password().equals(mEncrypt(userPasswordContent, "AES"))) {
+                                        // La clé de l'utilisateur qu'on va utiliser partout dans l'application.
+                                        mUserId = dsp.getKey();
+                                        // On sauvegarde l'utilisateur connu dans les sharedPreferences
+                                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                                        editor.putString(userName, userNameContent);
+                                        editor.putString(userPassword, userPasswordContent);
+                                        editor.apply();
+                                        // If user is known : if he has no quest => LobbyActivity; if he has => PlayerActivity
+                                        refUser.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                                startActivity(intent);
+                                            }
 
-                                   @Override
-                                   public void onCancelled(DatabaseError databaseError) {
-                                   }
-                               });
-                           } else {
-                               // Si le mot de passe ou le pseudo ne concordent pas
-                               Snackbar.make(view, "Pseudo ou mot de passe invalide", Snackbar.LENGTH_LONG)
-                                       .setAction("Action", null).show();
-                               simpleProgressBar.setVisibility(View.GONE);
-                           }
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                            }
+                                        });
+                                    } else {
+                                        // Si le mot de passe ou le pseudo ne concordent pas
+                                        Snackbar.make(view, "Pseudo ou mot de passe invalide", Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null).show();
+                                        simpleProgressBar.setVisibility(View.GONE);
+                                    }
 
 
+                                }
                             }
                         }
-                 }
 
 
                         // Encryptage du mot de passe
-                     public String mEncrypt(String userPassword, String key) {
+                        public String mEncrypt(String userPassword, String key) {
                             try {
                                 Key clef = new SecretKeySpec(key.getBytes("ISO-8859-2"), "Blowfish");
                                 Cipher cipher = Cipher.getInstance("Blowfish");
@@ -113,8 +113,8 @@ public class LoginActivity extends AppCompatActivity {
                                 return null;
                             }
                         }
-                     @Override
-                     public void onCancelled(DatabaseError databaseError) {}
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
                     });
                     simpleProgressBar.setVisibility(view.GONE);
                 }
