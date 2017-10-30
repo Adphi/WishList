@@ -3,10 +3,13 @@ package fr.wcs.wishlist;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -14,16 +17,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+
 import fr.wcs.wishlist.Helpers.UserHelper;
 import fr.wcs.wishlist.Models.Item;
 import fr.wcs.wishlist.Models.User;
+
 
 public class AddActivity extends AppCompatActivity {
 
@@ -51,6 +56,12 @@ public class AddActivity extends AppCompatActivity {
         mUser = UserHelper.getInstance();
 
         mFirebaseStorage = FirebaseStorage.getInstance();
+
+
+
+        if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 1);
+        }
 
         ImageButton imageWish =  findViewById(R.id.imageWish);
         imageWish.setOnClickListener(new View.OnClickListener() {
@@ -94,23 +105,44 @@ public class AddActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     mProgressDialog.setMessage("Uploading");
                     mProgressDialog.show();
-                    final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
-                    photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
-                            mProgressDialog.cancel();
-                            Glide.with(AddActivity.this)
-                                    .using(new FirebaseImageLoader())
-                                    .load(photopath)
-                                    .into(mImageWish);
-
-                            Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString());
-                            mUser.getWishItems().add(item);
-                            UserHelper.update();
-                            AddActivity.super.onBackPressed();
-                        }
-                    });
+                    if(mUri != null) {
+                        final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
+                        photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
+                                mProgressDialog.cancel();
+                                Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString(), mUser);
+                                mUser.getWishItems().add(item);
+                                UserHelper.update();
+                                AddActivity.super.onBackPressed();
+                            }
+                        });
+                    }
+                    else {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        String hash = String.valueOf(mBitmap.hashCode());
+                        UploadTask uploadTask = mFirebaseStorage.getReference("Photos").child(hash).putBytes(data);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                Toast.makeText(AddActivity.this, "Succes", Toast.LENGTH_SHORT).show();
+                                mProgressDialog.cancel();
+                                Item item = new Item(descriptionText.getText().toString(), downloadUrl.toString(), linkText.getText().toString(), mUser);
+                                mUser.getWishItems().add(item);
+                                UserHelper.update();
+                                AddActivity.super.onBackPressed();
+                            }
+                        });
+                    }
                 }
             });
         }
@@ -132,9 +164,8 @@ public class AddActivity extends AppCompatActivity {
 
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            mImageWish.setImageBitmap(thumbnail);
-
+            mBitmap = (Bitmap) data.getExtras().get("data");
+            mImageWish.setImageBitmap(mBitmap);
         }
 
     }

@@ -24,15 +24,22 @@ import fr.wcs.wishlist.R;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
+    public enum State {
+        WISH, GIFT, OFFER
+    }
+
     private Context mContext;
     private ArrayList<Item> mItems;
     private FirebaseStorage mFirebaseStorage;
     private ItemDeletedListener listener = null;
+    private State mState = null;
 
-    public ItemAdapter(Context context, ArrayList<Item> items) {
+    public ItemAdapter(Context context, ArrayList<Item> items, State state) {
         this.mContext = context;
         this.mItems = items;
+        this.mState = state;
         mFirebaseStorage = FirebaseStorage.getInstance();
+
     }
 
     public void setItems(ArrayList<Item> items) {
@@ -58,8 +65,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         holder.mButtonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mItems.remove(mItems.get(position));
-                notifyDataSetChanged();
                 if(listener != null) {
                     listener.onItemDeleted(position);
                 }
@@ -76,11 +81,26 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
         ImageView mImageViewItemPhoto;
         FloatingActionButton mButtonDelete;
+        FloatingActionButton mButtonGift;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mImageViewItemPhoto = itemView.findViewById(R.id.imageViewItemImage);
             mButtonDelete = itemView.findViewById(R.id.floatingActionButtonDelete);
+            mButtonGift = itemView.findViewById(R.id.floatingActionButtonGift);
+
+            switch (mState) {
+                case WISH:
+                    mButtonDelete.setVisibility(View.VISIBLE);
+                    mButtonGift.setVisibility(View.GONE);
+                    break;
+                case GIFT:
+                    mButtonDelete.setVisibility(View.GONE);
+                    break;
+                case OFFER:
+                    mButtonDelete.setVisibility(View.GONE);
+                    break;
+            }
         }
 
     }
@@ -89,7 +109,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         this.listener = listener;
     }
 
-    interface ItemDeletedListener {
+    public interface ItemDeletedListener {
         void onItemDeleted(int index);
     }
 }

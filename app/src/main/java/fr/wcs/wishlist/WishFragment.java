@@ -31,7 +31,7 @@ public class WishFragment extends Fragment{
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewWish);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(layoutManager);
-        mItemAdapter = new ItemAdapter(getActivity(), mUser.getWishItems());
+        mItemAdapter = new ItemAdapter(getActivity(), mUser.getWishItems(), ItemAdapter.State.WISH);
         recyclerView.setAdapter(mItemAdapter);
 
         FloatingActionButton fab = rootview.findViewById(R.id.fab);
@@ -49,6 +49,15 @@ public class WishFragment extends Fragment{
                 Log.d(TAG, "onUserDataReader() called with: user = [" + user + "]");
                 mUser = user;
                 mItemAdapter.setItems(mUser.getWishItems());
+            }
+        });
+
+        mItemAdapter.setOnItemDeletedListener(new ItemAdapter.ItemDeletedListener() {
+            @Override
+            public void onItemDeleted(int index) {
+                mUser.getWishItems().remove(index);
+                mItemAdapter.notifyDataSetChanged();
+                UserHelper.update();
             }
         });
 

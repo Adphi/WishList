@@ -1,22 +1,21 @@
 package fr.wcs.wishlist.Models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Created by adphi on 30/10/17.
  */
 
-public class Item implements Parcelable{
+public class Item{
 
     private String description;
     private String imageUrl;
     private String itemUrl;
+    private User user;
 
-    public Item(String description, String imageUrl, String itemUrl) {
+    public Item(String description, String imageUrl, String itemUrl, User user) {
         this.description = description;
         this.imageUrl = imageUrl;
         this.itemUrl = itemUrl;
+        this.user = user;
     }
 
     public Item() {
@@ -38,32 +37,11 @@ public class Item implements Parcelable{
         this.imageUrl = imageUrl;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public User getUser() {
+        return user;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(description);
-        dest.writeString(imageUrl);
+    public void setUser(User user) {
+        this.user = user;
     }
-
-    protected Item(Parcel in) {
-        description = in.readString();
-        imageUrl = in.readString();
-    }
-
-    public static final Creator<Item> CREATOR = new Creator<Item>() {
-        @Override
-        public Item createFromParcel(Parcel in) {
-            return new Item(in);
-        }
-
-        @Override
-        public Item[] newArray(int size) {
-            return new Item[size];
-        }
-    };
-
 }
