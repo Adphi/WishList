@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -51,7 +52,18 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -66,6 +78,29 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class AddActivity extends AppCompatActivity {
 
+    public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 99;
+    private static final int PICK_IMAGE_REQUEST = 2;
+    private static final int TAKE_IMAGE_REQUEST = 4;
+    private ImageView mImageView;
+    private Uri mFilePath;
+    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    public static String mViaName = "";
+    private ImageButton mFloatingActionButton;
+    private AlertDialog dialog;
+    private ProgressBar mProgressBar;
+    private ImageView mBeMyFirst;
+    private TextView mUploadInfo;
+    private TextView mInfoDialog;
+    private StorageReference mStorageReference;
+    public FirebaseStorage mStorage;
+
+    //recyclerview object
+    private RecyclerView recyclerView;
+
+    //adapter object
+    private RecyclerView.Adapter adapter;
+
+
     @Override
     protected void onCreate (final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +112,28 @@ public class AddActivity extends AppCompatActivity {
             public void onClick(View v) {
                 View view = getLayoutInflater().inflate(R.layout.dialog_photo, null);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
+
                 builder.setView(view);
                 AlertDialog alert = builder.create();
                 alert.show();
+                ImageButton takeImage = view.findViewById(R.id.takeImage);
+                takeImage.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dispatchTakePictureIntent();
+                    }
+                });
+                ImageButton selectImage = view.findViewById(R.id.selectImage);
+                selectImage.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(intent, "Selectionner une image"), PICK_IMAGE_REQUEST);
 
+                    }
+                });
             }
         });
     }
@@ -107,7 +160,7 @@ public class AddActivity extends AppCompatActivity {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = AddActivity.this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -123,7 +176,7 @@ public class AddActivity extends AppCompatActivity {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(AddActivity.this.getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
@@ -134,8 +187,8 @@ public class AddActivity extends AppCompatActivity {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                mCurrentPhotoUri = FileProvider.getUriForFile(getActivity(),
-                        "fr.wcs.viaferrata.fileprovider",
+                mCurrentPhotoUri = FileProvider.getUriForFile(AddActivity.this,
+                        "fr.wcs.wishlist.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
                 startActivityForResult(takePictureIntent, TAKE_IMAGE_REQUEST);
@@ -143,70 +196,9 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap rotateImage(Bitmap bitmap) {
-        ExifInterface exifInterface = null;
-        try {
-            exifInterface = new ExifInterface(mCurrentPhotoPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-        Matrix matrix = new Matrix();
-        switch (orientation){
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(270);
-                break;
-
-            default:
-        }
-        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(),matrix, true);
-        return rotatedBitmap;
-    }
-
-    /*private Bitmap setReducedImageSize(){
-        int targetImageViewWidht = mImageView.getWidth();
-        int targetImageViewHeight = mImageView.getHeight();
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
-
-        int cameraImageWidth =bmOptions.outWidth;
-        int cameraImageHeight =bmOptions.outHeight;
-
-        int scaleFactor = Math.min(cameraImageWidth/targetImageViewHeight, cameraImageHeight/targetImageViewHeight);
-            bmOptions.inSampleSize = scaleFactor;
-            bmOptions.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
-    }*/
-
     public void checkPermission() {
-//        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getActivity(),
-//                    PERMISSIONS, PERMISSION_WRITE_EXTERNAL_STORAGE);
-//
-//        }
-        //si la personne arrive ici elle a les droits
 
         uploadFromPath(mCurrentPhotoUri);
-//        Bitmap bitmap = null;
-//        try {
-//            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),mCurrentPhotoUri);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        bitmap = rotateImage(bitmap);
-//      //  mImageView.setImageBitmap(bitmap);
     }
 
     @Override
@@ -218,11 +210,6 @@ public class AddActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //La personne a accepté les permissions
                     checkPermission();
-                } else {
-
-                    //La personne a refusé les permissions, on re-demande en boucle
-                    //TODO: Afficher toast à la place pour expliquer pourquoi ca ne marchera pas
-
                 }
             }
         }
@@ -231,20 +218,20 @@ public class AddActivity extends AppCompatActivity {
     public void uploadFromPath(final Uri path) {
         if (path != null) {
 
-            /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Bitmap bitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),mCurrentPhotoUri);
+                bitmap = MediaStore.Images.Media.getBitmap(AddActivity.this.getContentResolver(),mCurrentPhotoUri);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-            byte[] data = baos.toByteArray();*/
+            byte[] data = baos.toByteArray();
 
-            final StorageReference viaRef = mStorageReference.child("image/" + mViaName.replace(" ", "_") + "/" + path.getLastPathSegment());
-            viaRef.putFile(path)
+            StorageReference photoRef = mStorageReference.child("image/" + mViaName.replace(" ", "_") + "/" + path.getLastPathSegment());
+            photoRef.putFile(path)
                     //viaRef.putBytes(data)
 
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -256,11 +243,10 @@ public class AddActivity extends AppCompatActivity {
                             mSelectImage.setVisibility(View.GONE);
                             mInfoDialog.setVisibility(View.GONE);
 
-                            Toast.makeText(getActivity().getApplicationContext(), "Image envoyée ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(AddActivity.this, "Image envoyée ", Toast.LENGTH_LONG).show();
                             dialog.dismiss();
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                             DatabaseReference imageRef = mDatabase.getReference("photos");
-                            PhotoModel newPhoto = new PhotoModel(mViaName,viaRef.toString());
+                            PhotoModel newPhoto = new PhotoModel("example",photoRef.toString());
                             imageRef.push().setValue(newPhoto);
 
                         }
@@ -269,7 +255,7 @@ public class AddActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
 
-                            Toast.makeText(getActivity().getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(AddActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
 
                         }
                     })
