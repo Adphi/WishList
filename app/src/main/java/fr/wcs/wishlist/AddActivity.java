@@ -20,7 +20,7 @@ public class AddActivity extends AppCompatActivity {
         imageWish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = getLayoutInflater().inflate(R.layout.dialog_photo, null);
+                View view = getLayoutInflater().inflate(R.layout.dialog_add, null);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
                 builder.setView(view);
                 AlertDialog alert = builder.create();
