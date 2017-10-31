@@ -1,7 +1,9 @@
 package fr.wcs.wishlist;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,7 +11,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -52,10 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        Intent intent = getIntent();
-        String userName = intent.getStringExtra("UserName");
-        Log.d("HELPER", "onCreate: " + userName);
+        
+        SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String userName = sharedpreferences.getString("NameKey", null);
         mUser = UserHelper.init(userName);
 
         Intent serviceIntent = new Intent(this, NotificationService.class);
