@@ -27,7 +27,7 @@ public class WishFragment extends Fragment{
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.wish, container, false);
 
-        mUser = UserHelper.getInstance();
+        mUser = UserHelper.getUser();
         mUserHelper = new UserHelper();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewWish);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);

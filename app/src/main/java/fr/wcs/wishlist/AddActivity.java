@@ -53,7 +53,7 @@ public class AddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add);
         mProgressDialog = new ProgressDialog(this);
 
-        mUser = UserHelper.getInstance();
+        mUser = UserHelper.getUser();
 
         mFirebaseStorage = FirebaseStorage.getInstance();
 

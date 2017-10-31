@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         String userName = intent.getStringExtra("UserName");
         Log.d("HELPER", "onCreate: " + userName);
         mUser = UserHelper.init(userName);
+
+        Intent serviceIntent = new Intent(this, NotificationService.class);
+        startService(serviceIntent);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

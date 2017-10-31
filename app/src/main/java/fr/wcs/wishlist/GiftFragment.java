@@ -37,7 +37,7 @@ public class GiftFragment extends Fragment{
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.gift, container, false);
-        mUser = UserHelper.getInstance();
+        mUser = UserHelper.getUser();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewGift);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(layoutManager);
@@ -108,6 +108,7 @@ public class GiftFragment extends Fragment{
                         DataSnapshot userData = dataSnapshot.child(userUid);
                         User user = userData.getValue(User.class);
                         Log.d("HELPER", "onDataChange: " + user.toString());
+                        user.setMessage(String.format("%s t'as offert %s", mUser.getName(), item.getDescription()));
                         user.getOfferedItems().add(item);
                         user.getWishItems().remove(item);
                         mRef.child(userUid).setValue(user);

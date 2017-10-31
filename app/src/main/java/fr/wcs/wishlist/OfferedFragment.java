@@ -27,7 +27,7 @@ public class OfferedFragment extends Fragment{
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.offered, container, false);
 
-        mUser = UserHelper.getInstance();
+        mUser = UserHelper.getUser();
         mUserHelper = new UserHelper();
         mItems = mUser.getOfferedItems();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewOffered);

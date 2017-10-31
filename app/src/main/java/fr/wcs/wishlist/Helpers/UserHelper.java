@@ -48,7 +48,7 @@ public class UserHelper {
         return mUser;
     }
 
-    public static User getInstance(){
+    public static User getUser(){
         return mUser;
     }
 

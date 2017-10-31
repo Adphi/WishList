@@ -15,6 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".NotificationService"
+            android:enabled="true"
+            android:exported="true"/>
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"

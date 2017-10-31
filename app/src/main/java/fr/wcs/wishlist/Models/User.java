@@ -11,6 +11,7 @@ public class User{
     private ArrayList<Item> wishItems = new ArrayList<>();
     private ArrayList<Item> giftItems = new ArrayList<>();
     private ArrayList<Item> offeredItems = new ArrayList<>();
+    private String message = "";
 
     public User(String name) {
         this.name = name;
@@ -50,4 +51,11 @@ public class User{
         this.offeredItems = offeredItems;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
