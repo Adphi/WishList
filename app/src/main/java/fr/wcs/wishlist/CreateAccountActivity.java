@@ -23,6 +23,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import fr.wcs.wishlist.Helpers.FirebaseHelper;
+import fr.wcs.wishlist.Helpers.UserHelper;
+import fr.wcs.wishlist.Models.User;
 
 public class CreateAccountActivity extends AppCompatActivity {
     final String userName = "NameKey";
@@ -82,6 +84,9 @@ public class CreateAccountActivity extends AppCompatActivity {
                             Toast.makeText(CreateAccountActivity.this, "WishList te souhaite la bienvenue " + userNameContent, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
                             intent.putExtra("UserName", userNameContent);
+                            User user = UserHelper.init(userNameContent);
+                            FirebaseHelper.getInstance().getReference("Users").child(String.valueOf(user.getName()
+                                    .hashCode())).setValue(user);
                             startActivity(intent);
                         }
                         // Encryptage du mot de passe

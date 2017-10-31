@@ -27,14 +27,12 @@ public class GiftFragment extends Fragment{
     private DatabaseReference mRef;
     private ArrayList<Item> mItems = new ArrayList<>();
     private User mUser;
-
-    ItemAdapter mItemAdapter;
+    private ItemAdapter mItemAdapter;
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.gift, container, false);
         mUser = UserHelper.getInstance();
-
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewGift);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(layoutManager);

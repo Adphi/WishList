@@ -19,15 +19,16 @@ public class WishFragment extends Fragment{
 
     private static final String TAG = "HELPER";
 
-    public User mUser;
-    ItemAdapter mItemAdapter;
+    private User mUser;
+    private ItemAdapter mItemAdapter;
+    private UserHelper mUserHelper;
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.wish, container, false);
 
-
         mUser = UserHelper.getInstance();
+        mUserHelper = new UserHelper();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewWish);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(layoutManager);
@@ -43,7 +44,7 @@ public class WishFragment extends Fragment{
             }
         });
 
-        UserHelper.setOnUserDataReaderListener(new UserHelper.UserDataReadyListener() {
+        mUserHelper.setOnUserDataReaderListener(new UserHelper.UserDataReadyListener() {
             @Override
             public void onUserDataReady(User user) {
                 Log.d(TAG, "onUserDataReady() called with: user = [" + user + "]");

@@ -23,6 +23,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import fr.wcs.wishlist.Helpers.FirebaseHelper;
+import fr.wcs.wishlist.Helpers.UserHelper;
 
 public class LoginActivity extends AppCompatActivity {
     final String userName = "NameKey";
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                 intent.putExtra("UserName", userName);
+                                                UserHelper userHelper = new UserHelper();
                                                 startActivity(intent);
                                             }
 

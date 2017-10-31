@@ -21,12 +21,14 @@ public class OfferedFragment extends Fragment{
     private ItemAdapter mItemAdapter;
     private ArrayList<Item> mItems;
     private User mUser;
+    private UserHelper mUserHelper;
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.offered, container, false);
 
         mUser = UserHelper.getInstance();
+        mUserHelper = new UserHelper();
         mItems = mUser.getOfferedItems();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewOffered);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
@@ -34,7 +36,7 @@ public class OfferedFragment extends Fragment{
         mItemAdapter = new ItemAdapter(getActivity(), mItems, ItemAdapter.State.OFFER);
         recyclerView.setAdapter(mItemAdapter);
 
-        UserHelper.setOnUserDataReaderListener(new UserHelper.UserDataReadyListener() {
+        mUserHelper.setOnUserDataReaderListener(new UserHelper.UserDataReadyListener() {
             @Override
             public void onUserDataReady(User user) {
                 Log.d("HELPER", "onUserDataReady: Items Offered Changed");
