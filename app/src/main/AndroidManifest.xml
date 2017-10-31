@@ -47,7 +47,8 @@
         <activity android:name=".MainActivity"/>
         <activity android:name=".CreateAccountActivity">
         </activity>
-        <activity android:name=".SearchItemActivity">
+        <activity android:name=".SearchItemActivity"
+            android:noHistory="true">
         </activity>
     </application>
 

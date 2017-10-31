@@ -34,6 +34,7 @@ public class RequestBuilder {
         this.keyWord = keyWord;
         this.sort = sort;
         this.itemPerPage = itemPerPage;
+        this.page = page;
     }
 
     public String build(){

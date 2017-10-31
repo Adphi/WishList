@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
@@ -57,7 +58,13 @@ public class AddActivity extends AppCompatActivity {
 
         mFirebaseStorage = FirebaseStorage.getInstance();
 
-
+        Button buttonPick = (Button) findViewById(R.id.buttonPickItem);
+        buttonPick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AddActivity.this, SearchItemActivity.class));
+            }
+        });
 
         if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 1);
@@ -94,8 +101,6 @@ public class AddActivity extends AppCompatActivity {
             }
         });
         addButton = findViewById(R.id.addButton);
-
-
 
         final EditText descriptionText = findViewById(R.id.descriptionEditText);
         final EditText linkText = findViewById(R.id.linkEditText);
@@ -148,6 +153,16 @@ public class AddActivity extends AppCompatActivity {
         }
         else {
             Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
+        }
+
+        Intent intent = getIntent();
+        Item selectedItem = intent.getParcelableExtra("SelectedItem");
+        if(selectedItem != null) {
+            descriptionText.setText(selectedItem.getDescription());
+            linkText.setText(selectedItem.getItemUrl());
+            Picasso.with(this)
+                    .load(selectedItem.getImageUrl())
+                    .into(imageWish);
         }
     }
 
