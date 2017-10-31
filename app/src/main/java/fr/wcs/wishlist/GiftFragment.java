@@ -1,6 +1,10 @@
 package fr.wcs.wishlist;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -39,7 +43,7 @@ public class GiftFragment extends Fragment{
     private String mSearchText = "";
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView (LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState){
         View rootview = inflater.inflate(R.layout.gift, container, false);
         mUser = UserHelper.getUser();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewGift);
@@ -159,6 +163,39 @@ public class GiftFragment extends Fragment{
 
                     }
                 });
+            }
+        });
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(v.getContext());
+                View mView = getActivity().getLayoutInflater().inflate(R.layout.dialog_photo,container,false);
+
+                //negative button
+                mBuilder.setNegativeButton("Fermer", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    }
+                });
+
+                //choose picture from gallery
+                mSelectImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(intent, "Selectionner une image"), PICK_IMAGE_REQUEST);
+                    }
+                });
+
+                mBuilder.setView(mView);
+                dialog = mBuilder.create();
+                dialog.show();
+
             }
         });
         return rootview;
