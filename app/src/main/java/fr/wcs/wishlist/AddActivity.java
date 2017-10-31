@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +23,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
 
@@ -57,13 +60,19 @@ public class AddActivity extends AppCompatActivity {
 
         mFirebaseStorage = FirebaseStorage.getInstance();
 
-
+        Button buttonPick = (Button) findViewById(R.id.buttonPickItem);
+        buttonPick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AddActivity.this, SearchItemActivity.class));
+            }
+        });
 
         if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 1);
         }
 
-        ImageButton imageWish =  findViewById(R.id.imageWish);
+        final ImageButton imageWish =  findViewById(R.id.imageWish);
         imageWish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,8 +103,6 @@ public class AddActivity extends AppCompatActivity {
             }
         });
         addButton = findViewById(R.id.addButton);
-
-
 
         final EditText descriptionText = findViewById(R.id.descriptionEditText);
         final EditText linkText = findViewById(R.id.linkEditText);
@@ -148,6 +155,32 @@ public class AddActivity extends AppCompatActivity {
         }
         else {
             Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
+        }
+
+        Intent intent = getIntent();
+        Item selectedItem = intent.getParcelableExtra("SelectedItem");
+        if(selectedItem != null) {
+            descriptionText.setText(selectedItem.getDescription());
+            linkText.setText(selectedItem.getItemUrl());
+            Picasso.with(this)
+                    .load(selectedItem.getImageUrl())
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            mBitmap = bitmap;
+                            imageWish.setImageBitmap(mBitmap);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
         }
     }
 

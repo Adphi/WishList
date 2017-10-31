@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.wcs.wishlist">
+          package="fr.wcs.wishlist">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -17,7 +18,8 @@
         <service
             android:name=".NotificationService"
             android:enabled="true"
-            android:exported="true" />
+
+            android:exported="true"/>
 
         <activity
             android:name=".LoginActivity"
@@ -26,7 +28,9 @@
             android:noHistory="true"/>
         <activity
             android:name=".AddActivity"
-            android:label="@string/title_activity_add"/>
+            android:label="@string/title_activity_add"
+            android:noHistory="true"/>
+
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -37,16 +41,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <activity android:name=".SearchItemActivity"
+                  android:noHistory="true"/>
 
         <activity android:name=".MainActivity" />
         <activity android:name=".SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+                  android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
         <activity android:name=".CreateAccountActivity"
-            android:noHistory="true"/>
+                  android:noHistory="true"/>
     </application>
 </manifest>

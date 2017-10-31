@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -27,7 +29,7 @@ import static android.view.View.GONE;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     public enum State {
-        WISH, GIFT, OFFER
+        WISH, GIFT, OFFER, CDISCOUNT
     }
 
     private Context mContext;
@@ -35,7 +37,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private FirebaseStorage mFirebaseStorage;
     private ItemDeletedListener deleteListener = null;
     private ItemGiftListener giftListener = null;
-    private ItemGiftRemovedListener gitRemoveListener = null;
+    private ItemItemSelectedListener itemSelectedListener = null;
     private State mState = null;
 
     public ItemAdapter(Context context, ArrayList<Item> items, State state) {
@@ -61,11 +63,18 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         String itemImageUrl = mItems.get(position).getImageUrl();
-        StorageReference reference = mFirebaseStorage.getReferenceFromUrl(itemImageUrl);
-        Glide.with(mContext)
-                .using(new FirebaseImageLoader())
-                .load(reference)
-                .into(holder.mImageViewItemPhoto);
+        if(mState != State.CDISCOUNT) {
+            StorageReference reference = mFirebaseStorage.getReferenceFromUrl(itemImageUrl);
+            Glide.with(mContext)
+                    .using(new FirebaseImageLoader())
+                    .load(reference)
+                    .into(holder.mImageViewItemPhoto);
+        }
+        else {
+            Picasso.with(mContext)
+                    .load(itemImageUrl)
+                    .into(holder.mImageViewItemPhoto);
+        }
         holder.mButtonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +88,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             public void onClick(View v) {
                 if(giftListener != null) {
                     giftListener.onItemGift(position);
+                }
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(itemSelectedListener != null) {
+                    itemSelectedListener.onItemSelected(position);
                 }
             }
         });
@@ -114,6 +131,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                     mButtonDelete.setVisibility(GONE);
                     mButtonGift.setVisibility(GONE);
                     break;
+                case CDISCOUNT:
+                    mButtonDelete.setVisibility(GONE);
+                    mButtonGift.setVisibility(GONE);
+                    break;
             }
         }
 
@@ -125,8 +146,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void setOnGiftListener(ItemGiftListener listener) {
         this.giftListener = listener;
     }
-    public void setOnGiftRemovedListener(ItemGiftRemovedListener listener) {
-        this.gitRemoveListener = listener;
+    public void setOnItemSelectedListener(ItemItemSelectedListener listener) {
+        this.itemSelectedListener = listener;
     }
 
     public interface ItemDeletedListener {
@@ -137,7 +158,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         void onItemGift(int index);
     }
 
-    public interface ItemGiftRemovedListener {
-        void onGiftRemove(int index);
+    public interface ItemItemSelectedListener {
+        void onItemSelected(int index);
     }
 }
