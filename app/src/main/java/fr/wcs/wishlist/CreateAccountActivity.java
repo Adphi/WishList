@@ -42,7 +42,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         final EditText editTextCreePassword = findViewById(R.id.creerPassword);
         final EditText editTextConfirmerPassword = findViewById(R.id.confirmerUserPassword);
         // On recupere les Shared  Preferences
-        final SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         Button buttonCreate = (Button) findViewById(R.id.buttonCreerCompt);
         buttonCreate.setOnClickListener(new View.OnClickListener() {

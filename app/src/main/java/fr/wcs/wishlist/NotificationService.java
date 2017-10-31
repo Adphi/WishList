@@ -4,7 +4,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -14,8 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import fr.wcs.wishlist.Helpers.FirebaseHelper;
-import fr.wcs.wishlist.Helpers.UserHelper;
-import fr.wcs.wishlist.Models.User;
 
 /**
  * Created by Philippe-Adrien on 31/10/2017.
@@ -37,8 +37,11 @@ public class NotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Get the Database
         database = FirebaseHelper.getInstance();
-        User user = UserHelper.getUser();
-        FirebaseHelper.getInstance().getReference("Users").child(String.valueOf(user.getName().hashCode())).child
+
+        SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String userName = sharedpreferences.getString("NameKey", null);
+
+        FirebaseHelper.getInstance().getReference("Users").child(String.valueOf(userName.hashCode())).child
                 ("message").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
