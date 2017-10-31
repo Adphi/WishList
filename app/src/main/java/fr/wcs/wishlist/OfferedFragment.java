@@ -41,9 +41,9 @@ public class OfferedFragment extends Fragment{
             public void onUserDataReady(User user) {
                 Log.d("HELPER", "onUserDataReady: Items Offered Changed");
                 mUser = user;
-                mItems.clear();
                 mItems = mUser.getOfferedItems();
-                Log.d("HELPER", "onUserDataReady: " + mItems);
+                Log.d("HELPER", "onGiftChanged: " + mItems);
+                mItemAdapter.setItems(mItems);
                 mItemAdapter.notifyDataSetChanged();
             }
         });
