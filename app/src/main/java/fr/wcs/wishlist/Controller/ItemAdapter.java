@@ -38,6 +38,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private ItemDeletedListener deleteListener = null;
     private ItemGiftListener giftListener = null;
     private ItemItemSelectedListener itemSelectedListener = null;
+    private LoadMoreListener loadMoreListener = null;
     private State mState = null;
 
     public ItemAdapter(Context context, ArrayList<Item> items, State state) {
@@ -63,6 +64,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         String itemImageUrl = mItems.get(position).getImageUrl();
+        if(position == mItems.size() - 1 && loadMoreListener != null) {
+            loadMoreListener.onLoadMoreListener();
+        }
         if(mState != State.CDISCOUNT) {
             StorageReference reference = mFirebaseStorage.getReferenceFromUrl(itemImageUrl);
             Glide.with(mContext)
@@ -149,6 +153,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void setOnItemSelectedListener(ItemItemSelectedListener listener) {
         this.itemSelectedListener = listener;
     }
+    public void setOnLoadMoreListener(LoadMoreListener listener) {
+        this.loadMoreListener = listener;
+    }
 
     public interface ItemDeletedListener {
         void onItemDeleted(int index);
@@ -160,5 +167,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     public interface ItemItemSelectedListener {
         void onItemSelected(int index);
+    }
+
+    public interface LoadMoreListener {
+        void onLoadMoreListener();
     }
 }

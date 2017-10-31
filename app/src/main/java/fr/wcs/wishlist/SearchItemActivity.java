@@ -35,6 +35,7 @@ public class SearchItemActivity extends AppCompatActivity {
     private ArrayList<Item> mItems = new ArrayList<>();
     private String mSearchText = "";
     private ProgressBar mProgressBar;
+    private int page = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +59,29 @@ public class SearchItemActivity extends AppCompatActivity {
             }
         });
 
+        mItemAdapter.setOnLoadMoreListener(new ItemAdapter.LoadMoreListener() {
+            @Override
+            public void onLoadMoreListener() {
+                page++;
+                mProgressBar.setVisibility(View.VISIBLE);
+                try {
+                    new AsynchronousGet().run(page);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         SearchView searchView = (SearchView) findViewById(R.id.searchViewItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                page = 0;
                 mSearchText = query;
                 mItems.clear();
                 mProgressBar.setVisibility(View.VISIBLE);
                 try {
-                    new AsynchronousGet().run();
+                    new AsynchronousGet().run(0);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -82,11 +97,10 @@ public class SearchItemActivity extends AppCompatActivity {
 
     public final class AsynchronousGet {
         private final OkHttpClient client = new OkHttpClient();
-
-        public void run() throws Exception {
+        public void run(int page) throws Exception {
             MediaType mediaType = MediaType.parse("application/octet-stream");
             String args = new RequestBuilder(mSearchText, RequestBuilder.Sort
-                    .RELEVANCE, 10, 0).build();
+                    .RELEVANCE, 10, page).build();
             Log.d("HELPER", "run: " + args);
             RequestBody body = RequestBody.create(mediaType, args);
             Request request = new Request.Builder()
