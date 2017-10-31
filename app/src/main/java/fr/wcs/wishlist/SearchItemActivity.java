@@ -58,12 +58,12 @@ public class SearchItemActivity extends AppCompatActivity {
             }
         });
 
-
         SearchView searchView = (SearchView) findViewById(R.id.searchViewItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mSearchText = query;
+                mItems.clear();
                 mProgressBar.setVisibility(View.VISIBLE);
                 try {
                     new AsynchronousGet().run();
@@ -104,7 +104,6 @@ public class SearchItemActivity extends AppCompatActivity {
                     JsonParser parser = new JsonParser();
                     JsonObject rootObj = parser.parse(data).getAsJsonObject();
                     JsonArray productsArray = rootObj.getAsJsonArray("Products");
-                   mItems.clear();
                     for(JsonElement element : productsArray){
                         JsonObject jsonItem = element.getAsJsonObject();
                         // Name
