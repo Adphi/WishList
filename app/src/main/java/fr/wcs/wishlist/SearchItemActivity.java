@@ -76,15 +76,7 @@ public class SearchItemActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                page = 0;
-                mSearchText = query;
-                mItems.clear();
-                mProgressBar.setVisibility(View.VISIBLE);
-                try {
-                    new AsynchronousGet().run(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                query(query);
                 return false;
             }
 
@@ -93,6 +85,19 @@ public class SearchItemActivity extends AppCompatActivity {
                 return false;
             }
         });
+        query("Android");
+    }
+
+    private void query(String text) {
+        page = 0;
+        mSearchText = text;
+        mItems.clear();
+        mProgressBar.setVisibility(View.VISIBLE);
+        try {
+            new AsynchronousGet().run(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public final class AsynchronousGet {

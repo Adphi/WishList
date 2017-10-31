@@ -122,7 +122,7 @@ public class AddActivity extends AppCompatActivity {
                                 Item item = new Item(descriptionText.getText().toString(), photopath.toString(), linkText.getText().toString(), mUser.getName());
                                 mUser.getWishItems().add(item);
                                 UserHelper.update();
-                                AddActivity.super.onBackPressed();
+                                startActivity(new Intent(AddActivity.this, MainActivity.class));
                             }
                         });
                     } else {
@@ -145,7 +145,7 @@ public class AddActivity extends AppCompatActivity {
                                 Item item = new Item(descriptionText.getText().toString(), downloadUrl.toString(), linkText.getText().toString(), mUser.getName());
                                 mUser.getWishItems().add(item);
                                 UserHelper.update();
-                                AddActivity.super.onBackPressed();
+                                startActivity(new Intent(AddActivity.this, MainActivity.class));
                             }
                         });
                     }
@@ -209,6 +209,7 @@ public class AddActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
+
 }
 
 
