@@ -2,9 +2,13 @@ package fr.wcs.wishlist;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,11 +20,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -41,10 +52,12 @@ public class GiftFragment extends Fragment{
     private ItemAdapter mItemAdapter;
     private ArrayList<String> mUsersNames = new ArrayList<>();
     private String mSearchText = "";
+    private Item mSelectedItem = null;
+    private AlertDialog dialog;
 
     @Override
     public View onCreateView (LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState){
-        View rootview = inflater.inflate(R.layout.gift, container, false);
+        final View rootview = inflater.inflate(R.layout.gift, container, false);
         mUser = UserHelper.getUser();
         RecyclerView recyclerView = rootview.findViewById(R.id.recyclerViewGift);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
@@ -52,8 +65,57 @@ public class GiftFragment extends Fragment{
         mItemAdapter = new ItemAdapter(getActivity(), mItems, ItemAdapter.State.GIFT);
         recyclerView.setAdapter(mItemAdapter);
 
-        SearchView searchView = (SearchView) rootview.findViewById(R.id.searchView);
-        final SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        mItemAdapter.setOnItemSelectedListener(new ItemAdapter.ItemItemSelectedListener() {
+            @Override
+            public void onItemSelected(int index) {
+                mSelectedItem = mItems.get(index);
+
+                View view = getLayoutInflater().inflate(R.layout.dialog_card, null);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setView(view);
+                dialog = builder.create();
+                dialog.show();
+                ImageView image = view.findViewById(R.id.imagePlace);
+                TextView textDescr = view.findViewById(R.id.descrText);
+
+                textDescr.setText(mSelectedItem.getDescription());
+                StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(mSelectedItem.getImageUrl());
+                Glide.with(getActivity())
+                        .using(new FirebaseImageLoader())
+                        .load(ref)
+                        .into(image);
+                final ImageButton linkBtn = view.findViewById(R.id.linkButton);
+                String link = mSelectedItem.getItemUrl();
+                if (link.isEmpty()){
+                    linkBtn.setVisibility(View.GONE);
+                }
+                else {
+                    linkBtn.setVisibility(View.VISIBLE);
+                }
+                linkBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = mSelectedItem.getItemUrl();
+                        try {
+                            Intent i = new Intent("android.intent.action.MAIN");
+                            i.setComponent(ComponentName.unflattenFromString("com.android.chrome/com.android.chrome.Main"));
+                            i.addCategory("android.intent.category.LAUNCHER");
+                            i.setData(Uri.parse(url));
+                            startActivity(i);
+                        }
+                        catch(ActivityNotFoundException e) {
+                            // Chrome is not installed
+                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            startActivity(i);
+                        }
+                    }
+                });
+            }
+        });
+
+        SearchView searchView = rootview.findViewById(R.id.searchView);
+        final SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_dropdown_item_1line, mUsersNames);
         searchAutoComplete.setAdapter(adapter);
@@ -165,39 +227,7 @@ public class GiftFragment extends Fragment{
                 });
             }
         });
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(v.getContext());
-                View mView = getActivity().getLayoutInflater().inflate(R.layout.dialog_photo,container,false);
 
-                //negative button
-                mBuilder.setNegativeButton("Fermer", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    }
-                });
-
-                //choose picture from gallery
-                mSelectImage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        Intent intent = new Intent(Intent.ACTION_PICK);
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(Intent.createChooser(intent, "Selectionner une image"), PICK_IMAGE_REQUEST);
-                    }
-                });
-
-                mBuilder.setView(mView);
-                dialog = mBuilder.create();
-                dialog.show();
-
-            }
-        });
         return rootview;
     }
 }

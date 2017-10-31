@@ -2,12 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="300dp"
+    android:layout_height="400dp"
     android:background="@color/colorAccentTrans"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="40dp">
+    android:padding="16dp">
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
@@ -16,8 +16,8 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ImageButton
-        android:id="@+id/imageWish"
+    <ImageView
+        android:id="@+id/imagePlace"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginTop="20dp"
@@ -30,7 +30,7 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/descrText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -42,12 +42,13 @@
         android:textColorLink="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageWish" />
+        app:layout_constraintTop_toBottomOf="@+id/imagePlace" />
 
     <ImageButton
-        android:id="@+id/selectImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/linkButton"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="20dp"
@@ -55,9 +56,10 @@
         android:elevation="2dp"
         android:padding="20dp"
         android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/descrText"
         app:srcCompat="@android:drawable/ic_menu_set_as" />
 
 </android.support.constraint.ConstraintLayout>

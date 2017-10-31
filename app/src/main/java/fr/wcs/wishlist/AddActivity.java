@@ -106,13 +106,13 @@ public class AddActivity extends AppCompatActivity {
 
         final EditText descriptionText = findViewById(R.id.descriptionEditText);
         final EditText linkText = findViewById(R.id.linkEditText);
-        if (!(descriptionText.equals(""))){
-            addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!descriptionText.getText().toString().isEmpty()) {
                     mProgressDialog.setMessage("Uploading");
                     mProgressDialog.show();
-                    if(mUri != null) {
+                    if (mUri != null) {
                         final StorageReference photopath = mFirebaseStorage.getReference("Photos").child(mUri.getLastPathSegment());
                         photopath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -125,8 +125,7 @@ public class AddActivity extends AppCompatActivity {
                                 AddActivity.super.onBackPressed();
                             }
                         });
-                    }
-                    else {
+                    } else {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
@@ -151,11 +150,12 @@ public class AddActivity extends AppCompatActivity {
                         });
                     }
                 }
-            });
-        }
-        else {
-            Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
-        }
+                else {
+                    Toast.makeText(AddActivity.this, "Il nous manque des informations !", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         Intent intent = getIntent();
         Item selectedItem = intent.getParcelableExtra("SelectedItem");
