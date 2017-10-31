@@ -28,10 +28,8 @@
             android:noHistory="true"/>
         <activity
             android:name=".AddActivity"
-            android:label="@string/title_activity_add"
-            android:noHistory="true"/>
-
-
+            android:label="@string/title_activity_add"/>
+        
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
