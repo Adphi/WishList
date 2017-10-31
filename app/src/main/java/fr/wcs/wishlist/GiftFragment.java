@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,10 +25,14 @@ import fr.wcs.wishlist.Models.User;
 
 public class GiftFragment extends Fragment{
 
+    private final String TAG = "HELPER";
+
     private DatabaseReference mRef;
     private ArrayList<Item> mItems = new ArrayList<>();
+    private ArrayList<Item> mFiltedItems = new ArrayList<>();
     private User mUser;
     private ItemAdapter mItemAdapter;
+    private ArrayList<String> mUsersNames = new ArrayList<>();
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -39,6 +44,30 @@ public class GiftFragment extends Fragment{
         mItemAdapter = new ItemAdapter(getActivity(), mItems, ItemAdapter.State.GIFT);
         recyclerView.setAdapter(mItemAdapter);
 
+        SearchView searchView = (SearchView) rootview.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "onQueryTextChange() called with: newText = [" + newText + "]");
+                mItems.addAll(mFiltedItems);
+                mFiltedItems.clear();
+                for(Item item : mItems) {
+                    if(!item.getUserName().toLowerCase().contains(newText.toLowerCase())){
+                        mFiltedItems.add(item);
+                    }
+                }
+                mItems.removeAll(mFiltedItems);
+                mItemAdapter.setItems(mItems);
+                mItemAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
         final String userUid = String.valueOf(mUser.getName().hashCode());
         mRef = FirebaseHelper.getInstance().getReference("Users");
         mRef.addValueEventListener(new ValueEventListener() {
@@ -49,6 +78,8 @@ public class GiftFragment extends Fragment{
                 for(DataSnapshot data : dataSnapshot.getChildren()) {
                     if(!userUid.equals(data.getKey())) {
                         User user = data.getValue(User.class);
+                        mUsersNames.clear();
+                        mUsersNames.add(user.getName());
                         for(Item item : user.getWishItems()) {
                             mItems.add(item);
 
