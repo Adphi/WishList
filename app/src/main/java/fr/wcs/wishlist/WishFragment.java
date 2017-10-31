@@ -41,6 +41,7 @@ public class WishFragment extends Fragment{
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), AddActivity.class);
                 startActivity(intent);
+                //startActivity(new Intent(getActivity(), SearchItemActivity.class));
             }
         });
 
