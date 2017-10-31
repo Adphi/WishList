@@ -34,18 +34,6 @@ public class MainActivity extends AppCompatActivity {
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(R.layout.abs_layout);
 
-        ImageView shareButton = findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Viens voir ma WishList ! \n\n LIENLIENLIENLIENLIENLIEN");
-                sendIntent.setType("text/plain");
-                startActivity(sendIntent);
-            }
-        });
-
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = findViewById(R.id.container);
@@ -54,9 +42,18 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         
-        SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String userName = sharedpreferences.getString("NameKey", null);
         mUser = UserHelper.init(userName);
+
+        ImageView buttonLogOut = findViewById(R.id.buttonLogOut);
+        buttonLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharedpreferences.edit().putString("NameKey", null).apply();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            }
+        });
 
         Intent serviceIntent = new Intent(this, NotificationService.class);
         startService(serviceIntent);
