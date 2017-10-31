@@ -1,14 +1,17 @@
 package fr.wcs.wishlist;
 
+import android.app.SearchManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +36,7 @@ public class GiftFragment extends Fragment{
     private User mUser;
     private ItemAdapter mItemAdapter;
     private ArrayList<String> mUsersNames = new ArrayList<>();
+    private String mSearchText = "";
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -45,6 +49,37 @@ public class GiftFragment extends Fragment{
         recyclerView.setAdapter(mItemAdapter);
 
         SearchView searchView = (SearchView) rootview.findViewById(R.id.searchView);
+        final SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, mUsersNames);
+        searchAutoComplete.setAdapter(adapter);
+        SearchManager searchManager =
+                (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+        searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                mSearchText=(String)parent.getItemAtPosition(position);
+                searchAutoComplete.setText(""+mSearchText);
+                mItems.addAll(mFiltedItems);
+                mFiltedItems.clear();
+                for(Item item : mItems) {
+                    if(!item.getUserName().toLowerCase().contains(mSearchText.toLowerCase())){
+                        mFiltedItems.add(item);
+                    }
+                }
+                mItems.removeAll(mFiltedItems);
+                mItemAdapter.setItems(mItems);
+                mItemAdapter.notifyDataSetChanged();
+
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -53,11 +88,11 @@ public class GiftFragment extends Fragment{
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d(TAG, "onQueryTextChange() called with: newText = [" + newText + "]");
+                mSearchText = newText;
                 mItems.addAll(mFiltedItems);
                 mFiltedItems.clear();
                 for(Item item : mItems) {
-                    if(!item.getUserName().toLowerCase().contains(newText.toLowerCase())){
+                    if(!item.getUserName().toLowerCase().contains(mSearchText.toLowerCase())){
                         mFiltedItems.add(item);
                     }
                 }
@@ -74,19 +109,25 @@ public class GiftFragment extends Fragment{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mItems.clear();
+                mFiltedItems.clear();
+                mUsersNames.clear();
                 Log.d("HELPER", "GiftList Changed");
                 for(DataSnapshot data : dataSnapshot.getChildren()) {
+                    User user = data.getValue(User.class);
                     if(!userUid.equals(data.getKey())) {
-                        User user = data.getValue(User.class);
-                        mUsersNames.clear();
                         mUsersNames.add(user.getName());
                         for(Item item : user.getWishItems()) {
-                            mItems.add(item);
-
+                            if(user.getName().toLowerCase().contains(mSearchText.toLowerCase())){
+                                mItems.add(item);
+                            }
+                            else {
+                                mFiltedItems.add(item);
+                            }
                         }
                     }
                 }
                 mItemAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -103,7 +144,6 @@ public class GiftFragment extends Fragment{
                 mRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("HELPER", "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
                         String userUid = String.valueOf(userName.hashCode());
                         DataSnapshot userData = dataSnapshot.child(userUid);
                         User user = userData.getValue(User.class);
